@@ -1,0 +1,28 @@
+﻿services:
+  postgres:
+    image: postgres:14
+    hostname: postgres
+    env_file:
+      - .env
+    ports:
+      - "6538:5432"
+    environment:
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_DB=$POSTGRES_DB
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+    volumes:
+      - ./data_postgres:/var/lib/postgresql/data
+  postgres-web:
+    depends_on:
+      - postgres
+    container_name: postgres_web
+    image: dpage/pgadmin4:latest
+    hostname: postgres-web
+    restart: unless-stopped
+    ports:
+      - "8085:80"
+    environment:
+      - PGADMIN_DEFAULT_PASSWORD=postgres
+      - PGADMIN_DEFAULT_EMAIL=postgres@postgres.com
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
