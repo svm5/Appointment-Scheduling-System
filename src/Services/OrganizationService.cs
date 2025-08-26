@@ -1,6 +1,7 @@
 using AutoMapper;
 using Contracts.Organization;
 using Domain;
+using Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -25,14 +26,25 @@ public class OrganizationService : IOrganizationService
         
         return _mapper.Map<OrganizationDetails>(organization);
     }
-
+    //  System.InvalidOperationException: Sequence contains no elements.
     public async Task<OrganizationDetails> GetOrganizationByIdAsync(int id, CancellationToken cancellationToken)
     {
-        Organization organization = await _context.Organizations
-            .Include(o => o.Places.Where(p => p.OrganizationId == id))
-            .SingleAsync(o => o.Id == id, cancellationToken);
-     
-        Console.WriteLine(organization.Places.Count);
+        Organization organization;
+        try
+        {
+            organization = await _context.Organizations
+                .Include(o => o.Places.Where(p => p.OrganizationId == id))
+                .SingleAsync(o => o.Id == id, cancellationToken);
+        }
+        catch (InvalidOperationException e)
+        {
+            Console.WriteLine(e.Message);
+            if (e.Message != "Sequence contains no elements.") throw;
+            var message = $"Organization with id {id} was not found";
+            throw new NotFoundException(message);
+
+        }
+        // Console.WriteLine(organization.Places.Count);
         return _mapper.Map<OrganizationDetails>(organization);
     }
 

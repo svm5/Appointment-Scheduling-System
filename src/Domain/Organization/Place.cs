@@ -19,5 +19,5 @@ public class Place
     [ForeignKey(nameof(OrganizationId))]
     public Organization Organization { get; set; }
     
-    public ICollection<Slot> Slots { get; } = new List<Slot>();
+    public ICollection<Slot> Slots { get; set;  } = new List<Slot>();
 }

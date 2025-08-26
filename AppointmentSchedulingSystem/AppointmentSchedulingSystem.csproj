@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\src\Controllers\Controllers.csproj" />
+      <ProjectReference Include="..\src\Mapping\Mapping.csproj" />
+      <ProjectReference Include="..\src\Middlewares\Middlewares.csproj" />
+      <ProjectReference Include="..\src\Persistence\Persistence.csproj" />
+      <ProjectReference Include="..\src\Services\Services.csproj" />
+      <ProjectReference Include="..\src\Utils\Utils.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="14.0.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.8" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.8">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
+    </ItemGroup>
+
+</Project>

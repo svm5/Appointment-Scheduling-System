@@ -9,5 +9,5 @@ public class Appointment
     public int SlotId { get; set; }
     public Slot Slot { get; set; }
     
-    public ICollection<User.User> Users { get; } = new List<User.User>();
+    public ICollection<User.User> Users { get; } = new HashSet<User.User>();
 }
