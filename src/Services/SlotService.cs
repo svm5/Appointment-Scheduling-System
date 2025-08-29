@@ -63,24 +63,53 @@ public class SlotService : ISlotService
         return _mapper.Map<OneSlotDetails>(slot);
     }
 
-    public async Task<ICollection<OneSlotDetails>> GetAllSlotsAsync(CancellationToken cancellationToken)
+    public async Task<ICollection<OneSlotDetails>> GetSlotsAsync(GetAllSlotsRequest request, CancellationToken cancellationToken)
     {
-        List<Slot> slots = await _context.Slots
-            .Include(s => s.Appointment)
-            .ToListAsync(cancellationToken);
+        var a = _context.Slots.AsNoTracking();
+        
+        a = a.Include(s => s.Appointment);
+        a = a.Include(s => s.Appointment);
+        
+        if (request.OrganizationId.HasValue)
+        {
+            a = a.Where(s => s.Place.OrganizationId == request.OrganizationId);
+        }
+
+        if (request.PlaceId.HasValue)
+        {
+            a = a.Where(s => s.Place.Id == request.PlaceId);
+        }
+
+        if (request.IsFree.HasValue)
+        {
+            a = a.Where(s => s.Appointment == null);
+        }
+
+        a = a.Where(s => (s.From >= request.From) && (s.To <= request.To));
+        
+        List<Slot> slots = await a.ToListAsync(cancellationToken);
         
         return _mapper.Map<List<OneSlotDetails>>(slots);
     }
 
-    public async Task<ICollection<OneSlotDetails>> GetAllSlotsInPlaceAsync(int placeId, CancellationToken cancellationToken)
-    {
-        List<Slot> slots = await _context.Slots
-            .Where(s => s.PlaceId == placeId)
-            .Include(s => s.Appointment)
-            .ToListAsync(cancellationToken);
-        
-        return _mapper.Map<List<OneSlotDetails>>(slots);
-    }
+    // public async Task<ICollection<OneSlotDetails>> GetAllSlotsAsync(CancellationToken cancellationToken)
+    // {
+    //     List<Slot> slots = await _context.Slots
+    //         .Include(s => s.Appointment)
+    //         .ToListAsync(cancellationToken);
+    //     
+    //     return _mapper.Map<List<OneSlotDetails>>(slots);
+    // }
+
+    // public async Task<ICollection<OneSlotDetails>> GetAllSlotsInPlaceAsync(int placeId, CancellationToken cancellationToken)
+    // {
+    //     List<Slot> slots = await _context.Slots
+    //         .Where(s => s.PlaceId == placeId)
+    //         .Include(s => s.Appointment)
+    //         .ToListAsync(cancellationToken);
+    //     
+    //     return _mapper.Map<List<OneSlotDetails>>(slots);
+    // }
 
     public async Task<ICollection<OneSlotDetails>> GetFreeSlotsAsync(GetFreeSlotsRequest request, CancellationToken cancellationToken)
     {

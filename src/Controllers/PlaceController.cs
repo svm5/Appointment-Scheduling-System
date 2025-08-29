@@ -48,12 +48,12 @@ public class PlaceController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PlaceDetails))]
     public async Task<IActionResult> GetPlaceById([FromRoute] int id, CancellationToken cancellationToken)
     {
-        var placeDetails = await _placeService.GetPlaceByIdAsync(id, cancellationToken);
-        if (!(await _permissionService.CheckPlaceAccess(User.Identity.Name, placeDetails.OrganizationId)))
+        if (!(await _permissionService.CheckPlaceAccess(User.Identity.Name, id)))
         {
             return Forbid();
         }
         
+        var placeDetails = await _placeService.GetPlaceByIdAsync(id, cancellationToken);
         return Ok(placeDetails);
     }
 

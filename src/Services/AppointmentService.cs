@@ -30,12 +30,25 @@ public class AppointmentService : IAppointmentService
         return _mapper.Map<AppointmentDetails>(appointment);
     }
 
-    public async Task<ICollection<AppointmentDetails>> GetAppointmentsAsync(CancellationToken cancellationToken)
+    public async Task<ICollection<AppointmentDetails>> GetAppointmentsAsync(GetAllAppointmentsRequest request, CancellationToken cancellationToken)
     {
-        List<Appointment> appointments = await _context.Appointments
-            .Include(a => a.Users)
-            .ToListAsync(cancellationToken);
-        
+        var q = _context.Appointments.AsNoTracking();
+
+        q = q.Include(a => a.Users);
+        q = q.Include(a => a.Slot)
+            .ThenInclude(s => s.Place);
+
+        if (request.OrganizationId.HasValue)
+        {
+            q = q.Where(a => a.Slot.Place.Id == request.OrganizationId);
+        }
+
+        if (request.UserId.HasValue)
+        {
+            q = q.Where(a => a.Users.Any(u => u.Id == request.UserId));
+        }
+        List<Appointment> appointments = await q.ToListAsync(cancellationToken);
+
         return _mapper.Map<List<AppointmentDetails>>(appointments);
     }
 
